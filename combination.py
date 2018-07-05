@@ -1,8 +1,12 @@
 from imblearn.combine import SMOTEENN
 from imblearn.combine import SMOTETomek
+from sklearn.svm import SVC
+
 from load_data import load_data
 import logistic_regression
 import numpy as np
+
+from roc import evaluate
 
 if __name__ == '__main__':
     # load data
@@ -16,20 +20,24 @@ if __name__ == '__main__':
     # baseline
     print("######################## baseline ########################")
 
-    train_loader = logistic_regression.data_loader(X_train, y_train)
-    model = logistic_regression.Module(X_train.shape[1], 2)
-    logistic_regression.train_and_test(model, train_loader, test_loader)
+    clf = SVC(probability=True)
+    clf.fit(X_train, y_train)
+    score = clf.predict_proba(X_test)
+    evaluate(y_test, score)
 
     # smote enn
     print("######################## smote-enn ########################")
 
     smote_enn = SMOTEENN(random_state=0)
     X_res, y_res = smote_enn.fit_sample(X_train, y_train)
-    train_loader = logistic_regression.data_loader(X_res, y_res)
-    logistic_regression.train_and_test(model, train_loader, test_loader)
-
+    clf = SVC(probability=True)
+    clf.fit(X_res, y_res)
+    score = clf.predict_proba(X_test)
+    evaluate(y_test, score)
     # smote tomek
     print("######################## smote-tomek ########################")
     smote_tomek = SMOTETomek(random_state=0)
-    train_loader = logistic_regression.data_loader(X_res, y_res)
-    logistic_regression.train_and_test(model, train_loader, test_loader)
+    clf = SVC(probability=True)
+    clf.fit(X_res, y_res)
+    score = clf.predict_proba(X_test)
+    evaluate(y_test, score)
