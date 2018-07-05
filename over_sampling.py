@@ -1,5 +1,7 @@
 import numpy as np
 from imblearn.over_sampling import SMOTE, ADASYN, RandomOverSampler
+from sklearn.svm import SVC
+
 from load_data import load_data
 import logistic_regression
 from roc import calculate_roc
@@ -20,33 +22,55 @@ if __name__ == '__main__':
     X_train, y_train = map(np.array, [X_train, y_train])
     X_test, y_test = map(np.array, [X_test, y_test])
 
-    module = logistic_regression.Module(X_train.shape[1], 2)
-    train_loader = logistic_regression.data_loader(X_train, y_train)
-    test_loader = logistic_regression.data_loader(X_test, y_test, shuffle=False)
+    clf = SVC(probability=True)
+    clf.fit(X_train, y_train)
+    # module = logistic_regression.Module(X_train.shape[1], 2)
+    # train_loader = logistic_regression.data_loader(X_train, y_train)
+    # test_loader = logistic_regression.data_loader(X_test, y_test, shuffle=False)
 
     # Baseline
     print("################## Baseline ######################")
-    train_and_test(module, train_loader, test_loader)
-
+    #train_and_test(module, train_loader, test_loader)
+    score = clf.predict_proba(X_test)
+    index = np.argmax(score, axis=1)
+    print(np.sum(index==y_test)/len(y_test))
+    calculate_roc(y_test, score[:, 1])
 
     # Random oversampling
     print("################## Random Sampling ######################")
     X_res, y_res = RandomOverSampler(random_state=42).fit_sample(X_train, y_train)
-    module = logistic_regression.Module(X_train.shape[1], 2)
-    train_loader = logistic_regression.data_loader(X_res, y_res)
+    # module = logistic_regression.Module(X_train.shape[1], 2)
+    # train_loader = logistic_regression.data_loader(X_res, y_res)
 
-    train_and_test(module, train_loader, test_loader)
+    # train_and_test(module, train_loader, test_loader)
+    clf = SVC(probability=True)
+    clf.fit(X_res, y_res)
+    score = clf.predict_proba(X_test)
+    index = np.argmax(score, axis=1)
+    print(np.sum(index == y_test) / len(y_test))
+    calculate_roc(y_test, score[:, 1])
 
     # SMOTE oversampling
     print("################## SMOTE Sampling ######################")
     X_res, y_res = SMOTE().fit_sample(X_train, y_train)
-    module = logistic_regression.Module(X_train.shape[1], 2)
-    train_loader = logistic_regression.data_loader(X_res, y_res)
-    train_and_test(module, train_loader, test_loader)
-
+    # module = logistic_regression.Module(X_train.shape[1], 2)
+    # train_loader = logistic_regression.data_loader(X_res, y_res)
+    # train_and_test(module, train_loader, test_loader)
+    clf = SVC(probability=True)
+    clf.fit(X_res, y_res)
+    score = clf.predict_proba(X_test)
+    index = np.argmax(score, axis=1)
+    print(np.sum(index == y_test) / len(y_test))
+    calculate_roc(y_test, score[:, 1])
     # ADASYN oversampling
     print("################## ADASYN Sampling ######################")
     X_res, y_res = ADASYN().fit_sample(X_train, y_train)
-    module = logistic_regression.Module(X_train.shape[1], 2)
-    train_loader = logistic_regression.data_loader(X_res, y_res)
-    train_and_test(module, train_loader, test_loader)
+    # module = logistic_regression.Module(X_train.shape[1], 2)
+    # train_loader = logistic_regression.data_loader(X_res, y_res)
+    # train_and_test(module, train_loader, test_loader)
+    clf = SVC(probability=True)
+    clf.fit(X_res, y_res)
+    score = clf.predict_proba(X_test)
+    index = np.argmax(score, axis=1)
+    print(np.sum(index == y_test) / len(y_test))
+    calculate_roc(y_test, score[:, 1])
