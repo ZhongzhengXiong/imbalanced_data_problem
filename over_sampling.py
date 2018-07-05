@@ -4,10 +4,7 @@ from sklearn.svm import SVC
 
 from load_data import load_data
 import logistic_regression
-from roc import calculate_roc
-
-
-
+from roc import calculate_roc, evaluate
 
 
 def train_and_test(module, train_loader, test_loader):
@@ -32,9 +29,7 @@ if __name__ == '__main__':
     print("################## Baseline ######################")
     #train_and_test(module, train_loader, test_loader)
     score = clf.predict_proba(X_test)
-    index = np.argmax(score, axis=1)
-    print(np.sum(index==y_test)/len(y_test))
-    calculate_roc(y_test, score[:, 1])
+    evaluate(y_test, score)
 
     # Random oversampling
     print("################## Random Sampling ######################")
@@ -46,9 +41,7 @@ if __name__ == '__main__':
     clf = SVC(probability=True)
     clf.fit(X_res, y_res)
     score = clf.predict_proba(X_test)
-    index = np.argmax(score, axis=1)
-    print(np.sum(index == y_test) / len(y_test))
-    calculate_roc(y_test, score[:, 1])
+    evaluate(y_test, score)
 
     # SMOTE oversampling
     print("################## SMOTE Sampling ######################")
@@ -59,9 +52,7 @@ if __name__ == '__main__':
     clf = SVC(probability=True)
     clf.fit(X_res, y_res)
     score = clf.predict_proba(X_test)
-    index = np.argmax(score, axis=1)
-    print(np.sum(index == y_test) / len(y_test))
-    calculate_roc(y_test, score[:, 1])
+    evaluate(y_test, score)
     # ADASYN oversampling
     print("################## ADASYN Sampling ######################")
     X_res, y_res = ADASYN().fit_sample(X_train, y_train)
@@ -71,6 +62,4 @@ if __name__ == '__main__':
     clf = SVC(probability=True)
     clf.fit(X_res, y_res)
     score = clf.predict_proba(X_test)
-    index = np.argmax(score, axis=1)
-    print(np.sum(index == y_test) / len(y_test))
-    calculate_roc(y_test, score[:, 1])
+    evaluate(y_test, score)
